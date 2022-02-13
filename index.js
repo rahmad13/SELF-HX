@@ -36,7 +36,6 @@ const got = require("got");
 const imageToBase64 = require('image-to-base64');
 const ID3Writer = require('browser-id3-writer');		
 const brainly = require('brainly-scraper')
-const yts = require( 'yt-search')
 const ms = require('parse-ms')
 const toMs = require('ms')
 const { error } = require("qrcode-terminal")
@@ -387,7 +386,6 @@ Prefix : 「 MULTI-PREFIX 」
 ► _${prefix}totag_
 
 *</DOWNLOAD>*
-► _${prefix}ytsearch_ <query>
 ► _${prefix}igstalk_ <query>
 ► _${prefix}play_ <query>
 ► _${prefix}video_ <query>
@@ -964,50 +962,6 @@ ${anime.desc}\n\n*Link Batch* : ${anime.batch}\n*Link Download SD* : ${anime.bat
 			}
 			hexa.sendMessage(from, optionshidetag, text)
 			break
-	case 'play':
-			if (args.length === 0) return reply(`Kirim perintah *${prefix}play* _Judul lagu yang akan dicari_`)
-            var srch = args.join('')
-    		aramas = await yts(srch);
-    		aramat = aramas.all 
-   			var mulaikah = aramat[0].url							
-                  try {
-                    yta(mulaikah)
-                    .then((res) => {
-                        const { dl_link, thumb, title, filesizeF, filesize } = res
-                        axios.get(`https://tinyurl.com/api-create.php?url=${dl_link}`)
-                        .then(async (a) => {
-                        if (Number(filesize) >= 100000) return sendMediaURL(from, thumb, `*PLAY MUSIC*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesizeF}\n*Link* : ${a.data}\n\n_Untuk durasi lebih dari batas disajikan dalam mektuk link_`)
-                        const captions = `*PLAY MUSIC*\n\n*Title* : ${title}\n*Ext* : MP3\n*Size* : ${filesizeF}\n*Link* : ${a.data}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
-                        sendMediaURL(from, thumb, captions)
-                        await sendMediaURL(from, dl_link).catch(() => reply('error'))
-                        })                
-                        })
-                        } catch (err) {
-                        reply(mess.error.api)
-                        }
-                   break  
-        case 'video':
-            if (args.length === 0) return reply(`Kirim perintah *${prefix}video* _Judul lagu yang akan dicari_`)
-            var srch = args.join('')
-            aramas = await yts(srch);
-            aramat = aramas.all 
-            var mulaikah = aramat[0].url                            
-                  try {
-                    ytv(mulaikah)
-                    .then((res) => {
-                        const { dl_link, thumb, title, filesizeF, filesize } = res
-                        axios.get(`https://tinyurl.com/api-create.php?url=${dl_link}`)
-                        .then(async (a) => {
-                        if (Number(filesize) >= 100000) return sendMediaURL(from, thumb, `*PLAY VIDEO*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesizeF}\n*Link* : ${a.data}\n\n_Untuk durasi lebih dari batas disajikan dalam mektuk link_`)
-                        const captions = `*PLAY VIDEO*\n\n*Title* : ${title}\n*Ext* : MP4\n*Size* : ${filesizeF}\n*Link* : ${a.data}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
-                        sendMediaURL(from, thumb, captions)
-                        await sendMediaURL(from, dl_link).catch(() => reply('error'))
-                        })                
-                        })
-                        } catch (err) {
-                        reply(mess.error.api)
-                        }
-                   break      
     case 'sticker': 
     case 'stiker':
     case 'sg':
@@ -1077,28 +1031,6 @@ ${anime.desc}\n\n*Link Batch* : ${anime.batch}\n*Link Download SD* : ${anime.bat
 			fakethumb(buffer,'NIH')
 			fs.unlinkSync(ran)
 			})
-			break
-	case 'ytsearch':
-			if (args.length < 1) return reply('Tolong masukan query!')
-			var srch = args.join('');
-			try {
-        	var aramas = await yts(srch);
-   			} catch {
-        	return await hexa.sendMessage(from, 'Error!', MessageType.text, dload)
-    		}
-    		aramat = aramas.all 
-    		var tbuff = await getBuffer(aramat[0].image)
-    		var ytresult = '';
-    		ytresult += '「 *YOUTUBE SEARCH* 」'
-    		ytresult += '\n________________________\n\n'
-   			aramas.all.map((video) => {
-        	ytresult += '❏ Title: ' + video.title + '\n'
-            ytresult += '❏ Link: ' + video.url + '\n'
-            ytresult += '❏ Durasi: ' + video.timestamp + '\n'
-            ytresult += '❏ Upload: ' + video.ago + '\n________________________\n\n'
-    		});
-    		ytresult += '◩ *SELF-BOT*'
-    		await fakethumb(tbuff,ytresult)
 			break
 	case 'setreply':
 	case 'setfake':
